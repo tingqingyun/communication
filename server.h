@@ -1,20 +1,5 @@
 //if have loaded the server.h,then donet need load it again
-#ifndef SERVER_H
-#define SERVER_H
-#include<iostream>
-#include<vector>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <stdio.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/shm.h>
-#include <thread>
-using namespace std;
+#include "headers.h"
 class server
 {
 	private:

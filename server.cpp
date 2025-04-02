@@ -65,8 +65,7 @@ void server::run()
 	}
 }
 void server::RecvMsg(int conn)
-{
-	cout<<" 1\n";	
+{	
 	//buffer(accept input)
 	char buffer[1000];
 	while(1)

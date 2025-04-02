@@ -1,14 +1,6 @@
-#include<iostream>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<string.h>
-#include<arpa/inet.h>
-#include<stdio.h>
-#include<unistd.h>
-#include<stdlib.h>
-using namespace std;
+#include "client.h"
 
-int main()
+void client::run()
 {
 	//define sockfd taojiezi ,header is <sys/socket.h>
 	int sock_cli = socket(AF_INET, SOCK_STREAM, 0);
@@ -28,6 +20,17 @@ int main()
 		exit(1);
 	}
 	cout<<"connect server succussfully\n";
+	//claim send thread and recv thread
+	thread send_t(SendMsg,sock),recv_t(RecvMsg,sock);
+	
+	send_t.detach();
+	recv_t.detach();
+	return;
+}
+
+void client::SendMsg(int conn)
+{
+	
 	//define send buff
 	//char sendbuf[100];
 	string input;
@@ -49,7 +52,5 @@ int main()
 		if(input == "exit")
 			break;
 	}
-	//close the connect
-	close(sock_cli);
-	return 0;
-}
+
+void 
