@@ -53,4 +53,16 @@ void client::SendMsg(int conn)
 			break;
 	}
 
-void 
+void client::RecvMsg(int conn)
+{
+	char buffer[1000];
+	while(1)
+	{
+		memset(buffer,0,sizeof(buffer));
+		int len = recv(conn,buffer,sizeof(buffer),0);
+		if(len<=0)
+			break;
+		cout<<"receive serfer:"<<buffer<<endl;
+	}
+}
+ 

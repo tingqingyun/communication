@@ -3,13 +3,18 @@ using namespace std;
 server::server(int port,string ip):server_port(port),server_ip(ip){}
 
 server::~server(){
-	for(auto conn:sock_arr)
+	for(int i = 0;i<sock_arr.size();i++)
 	{
-		cout<<"client"<<conn<<"disconnect";
-		close(conn);
+		if(sock_arr[i])
+		{
+			close(i);
+		}
+		cout<<"client"<<conn<<"disconnect\n";
 	}
 	close(server_sockfd);
 }
+
+verctor<bool> server::sock_arr(10000,false);
 
 void server::run()
 {
@@ -76,15 +81,14 @@ void server::RecvMsg(int conn)
 	//if client input exit or error ,exit
 		if(strcmp(buffer,"exit")==0 || len<=0)
 		{
+			//close corresponding conn
+			close(conn);
+			//reset
+			sock_arr[conn] = false;
 			break;
 		}
-		for(int i = 0;i<len;i++)
-		{
-			cout<<buffer[i];
-		}
-		cout<<"\n";
-	//output client information
-		cout<<"client"<<conn<< ": "<<buffer<<endl;
+		cout<<"receicv taojiezi"<<conn<<":"<<buffer<<"\n";
+		
 	}
 	
 }	

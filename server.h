@@ -10,7 +10,7 @@ class server
 	//ip
 	string server_ip;
 	//save all taojiezi
-	vector<int> sock_arr;
+	static vector<bool> sock_arr;
 	public:
 	server(int port,string ip);
 	~server();
