@@ -1,20 +1,21 @@
 #include "server.h"
 using namespace std;
+
+vector<bool> server::sock_arr(10000,false);
 server::server(int port,string ip):server_port(port),server_ip(ip){}
 
 server::~server(){
 	for(int i = 0;i<sock_arr.size();i++)
 	{
+		cout<<"client"<<sock_arr[i]<<"disconnect\n";
 		if(sock_arr[i])
 		{
 			close(i);
 		}
-		cout<<"client"<<conn<<"disconnect\n";
 	}
 	close(server_sockfd);
 }
 
-verctor<bool> server::sock_arr(10000,false);
 
 void server::run()
 {
@@ -26,9 +27,9 @@ void server::run()
 	//sin_family is protocol
 	server_sockaddr.sin_family = AF_INET;
 	//sin_port is port
-	server_sockaddr.sin_port = htons(8023);
+	server_sockaddr.sin_port = htons(server_port);
 	//sin_addr.s_addr is ip address
-	server_sockaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	server_sockaddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 	//bind the sockfd with ip and port
 	if(bind(server_sockfd,(struct sockaddr *)&server_sockaddr,sizeof(server_sockaddr))==1)
 	{
@@ -66,6 +67,7 @@ void server::run()
 		//header is <thread>
 		std::thread t(server::RecvMsg,conn);
 		//with detach, the server will not jam up
+		cout<<"1\n";
 		t.detach();
 	}
 }
@@ -78,6 +80,7 @@ void server::RecvMsg(int conn)
 	//accept the data that client send
 		memset(buffer,0,sizeof(buffer));
 		int len = recv(conn, buffer, 1000,0);
+		cout<<"test point 1\n";
 	//if client input exit or error ,exit
 		if(strcmp(buffer,"exit")==0 || len<=0)
 		{
@@ -88,7 +91,15 @@ void server::RecvMsg(int conn)
 			break;
 		}
 		cout<<"receicv taojiezi"<<conn<<":"<<buffer<<"\n";
-		
+		string ans = "receive";
+		cout<<"test point 2\n";
+		int ret = send(conn,ans.c_str(),ans.length(),0);
+		cout<<"test point 3\n";
+		if(ret<=0)
+		{
+			close(conn);
+			sock_arr[conn] = false;
+			break;
+		}
 	}
-	
-}	
+}	 

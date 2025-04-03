@@ -1,4 +1,7 @@
 //if have loaded the server.h,then donet need load it again
+#ifndef SERVER_H
+#define SERVER_H
+
 #include "headers.h"
 class server
 {
@@ -10,7 +13,7 @@ class server
 	//ip
 	string server_ip;
 	//save all taojiezi
-	static vector<bool> sock_arr;
+	static std::vector<bool> sock_arr;
 	public:
 	server(int port,string ip);
 	~server();
