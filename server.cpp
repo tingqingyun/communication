@@ -90,13 +90,30 @@ void server::RecvMsg(int conn)
 			sock_arr[conn] = false;
 			break;
 		}
-		string ans = "receive";
-		int ret = send(conn,ans.c_str(),ans.length(),0);
-		if(ret<=0)
-		{
-			close(conn);
-			sock_arr[conn] = false;
-			break;
-		}
 	}
 }	 
+
+void server::HandleRequest(int conn,string str)
+{
+	char buffer[1000];
+	string name,pass;
+	bool if_login=false;
+	string login_name;
+	string targer_name;
+	int group_num;
+	MYSQL *con = musql_init(NULL);
+	mysql_real_connect(con,"127.0.0.1","root","","ChatProject",0,NULL,CLIENT_MULTI_STATEMENTS);
+	if(str.find("name:")!=str.npos)
+	{
+		int p1=str.find("name:"),p2=str.find("pass:");
+		name = str.substr(p1+5,p2-5);
+		pass = str.substr(p1+5,str.length()-p2-4);
+		string search = "INSERT INTO USER VALUES(\"";
+		search+=name;
+		search+="\",\"";
+		search+=pass;
+		search+="\",\"";
+		cout<<"sql command:"<<search<<endl<<endl;
+		mysql_query(con,search.c_str());
+	}
+}

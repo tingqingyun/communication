@@ -27,30 +27,65 @@ void client::run()
 	}
 	else
 	cout<<"connect server succussfully\n";
-	//claim send thread and recv thread
-	thread send_t(SendMsg,sock),recv_t(RecvMsg,sock);
-	
-	send_t.join();
-	cout<<"send thread over\n";
-	recv_t.join();
-	cout<<"recv thread over\n";
+	HandleClient(sock);
 	return;
 }
+
+void client::HandleClient(int conn)
+{
+	int choice;
+	string name,pass,pass1;
+	cout<<"----------------\n";
+	cout<<"input the choice\n";
+	cout<<"     0:exit     \n";
+	cout<<"    1:login     \n";
+	cout<<"   2:register   \n";
+	cout<<"----------------\n\n";
+	while(1)
+	{
+		cin>>choice;
+		if(choice==0)
+		{
+			break;
+		}
+		if(choice==2)
+		{
+			cout<<"the name: ";
+			cin>>name;
+			while(1)
+			{
+				cout<<"password: ";
+				cin>>pass;
+				cout<<"confrim password: ";
+				cin>>pass1;
+				if(pass==pass1)
+				{
+					break;
+				}
+				else
+				{
+					cout<<"the password is not same\n";
+				}
+			}	
+			name = "name:"+name;
+			pass = "pass:"+pass;
+			string str = name + pass;
+			send(conn,str.c_str(),str.length(),0);
+			cout<<"register success\n";
+			cout<<"please input your choice:";
+		}
+	}
+}
+
 
 void client::SendMsg(int conn)
 {
 	
 	//define send buff
-	//char sendbuf[100];
 	string input;
-	//define receive buff
-	//char recbuff[100];
 	//send message
 	while(1)
 	{
-		//clean snedbuff
-		//memset(sendbuf,0,sizeof(sendbuf));
-		//cin.ignore();
 		//input message
 		getline(cin,input);
 		//send the input
