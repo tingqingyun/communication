@@ -9,7 +9,7 @@ client::~client()
 void client::run()
 {
 	//define sockfd taojiezi ,header is <sys/socket.h>
-	int sock_cli = socket(AF_INET, SOCK_STREAM, 0);
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
 	//define server sockaddr_in,hearder is <netinet/in.h>
 	struct sockaddr_in servaddr;
 	//initialize struct,header is <string.h>
@@ -20,17 +20,20 @@ void client::run()
 	//server ipaddress,header is <arpa/inet.h>
 	servaddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 	//connect the client with server
-	if(connect(sock_cli, (struct sockaddr*)&servaddr,sizeof(servaddr))<0)
+	if(connect(sock, (struct sockaddr*)&servaddr,sizeof(servaddr))<0)
 	{
 		perror("connect");
 		exit(1);
 	}
+	else
 	cout<<"connect server succussfully\n";
 	//claim send thread and recv thread
 	thread send_t(SendMsg,sock),recv_t(RecvMsg,sock);
 	
 	send_t.join();
+	cout<<"send thread over\n";
 	recv_t.join();
+	cout<<"recv thread over\n";
 	return;
 }
 
@@ -68,7 +71,7 @@ void client::RecvMsg(int conn)
 		int len = recv(conn,buffer,sizeof(buffer),0);
 		if(len<=0)
 			break;
-		cout<<"receive serfer:"<<buffer<<endl;
+		cout<<"server: "<<buffer<<endl;
 	}
 }
  
