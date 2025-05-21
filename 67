@@ -106,7 +106,7 @@ void server::RecvMsg(int conn)
 		}
 		//change the buffer whih string
 		//string str(buffer);
-		cout<<"taojiezi: "<<conn<<": "<<buffer<<"\n";
+		cout<<"taojiezi: "<<conn<<" recv_str: "<<buffer<<"\n";
 		string str(buffer);
 		//send the string to sql database		
 		HandleRequest(conn,str,info);
@@ -141,30 +141,6 @@ void server::HandleRequest(int conn,string str,tuple<bool,string,string,int,int>
 		cout<<"database connect failed:"<<mysql_error(con);
 		mysql_close(con);
 		return ;
-	}
-	redisContext *redis_target = redisConnect("127.0.0.1",6379);	
-	if(redis_target->err)
-	{
-		redisFree(redis_target);
-		cout<<"connect failed"<<endl;
-	}
-	
-	if(str.find("cookie:")!=str.npos)
-	{
-		string cookie = str.substr(7);
-		string redis_str= "hget "+cookie+" name";
-		redisReply *r = (redisReply*)redisCommand(redis_target,redis_str.c_str());
-		string send_res;
-		if(r->str)
-		{
-			cout<<"the result of redis: "<<r->str<<endl;
-			send_res = r->str;
-		}
-		else
-		{
-			send_res = "NULL";
-		}
-		send(conn,send_res.c_str(),send_res.length()+1,0);
 	}
 	//str.npos indicate didn't find,str.find(str1) indicate find str1 in str;	
 	if(str.find("name:")!=str.npos)
@@ -216,28 +192,6 @@ void server::HandleRequest(int conn,string str,tuple<bool,string,string,int,int>
 				pthread_mutex_lock(&name_sock_mutx);
 				name_sock_map[login_name] = conn;
 				pthread_mutex_unlock(&name_sock_mutx);
-				srand(time(NULL));
-				for(int i=0;i<10;i++)
-				{
-					int type = rand()%3;
-					if(type==0)
-					{	
-						str1+='0'+rand()%9;
-					}
-					else if(type==1)
-					{
-						str1+='a'+rand()%26;
-					}
-					else if(type==2)
-					{
-						str1+='A'+rand()%26;
-					}
-				}
-				string redis_str="hset "+str1.substr(2)+" name "+login_name;
-				redisReply *r = (redisReply*)redisCommand(redis_target,redis_str.c_str());
-				redis_str = "expire "+str1.substr(2)+" 3000";
-				r = (redisReply*)redisCommand(redis_target,redis_str.c_str());
-				cout<<"random cookie: "<<str1.substr(2)<<endl;
 				send(conn,str1.c_str(),str1.length()+1,0);
 			}
 			else
@@ -309,10 +263,8 @@ void server::HandleRequest(int conn,string str,tuple<bool,string,string,int,int>
 		cout<<"group info:"<<send_str<<endl;
 		for(auto i:group_map[group_num])
 		{
-			cout<<conn<<i<<endl;
 			if(i!=conn)
 			{
-				cout<<"target_conn"<<i;
 				send(i,send_str.c_str(),send_str.length(),0);
 			}
 		}

@@ -15,6 +15,11 @@
 #include<thread>
 #include<vector>
 #include<mysql/mysql.h>
+#include<unordered_map>
+#include<set>
+#include<pthread.h>
+#include<hiredis/hiredis.h>
+#include<fstream>
 using namespace std;
 
 #endif
