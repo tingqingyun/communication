@@ -20,6 +20,10 @@
 #include<pthread.h>
 #include<hiredis/hiredis.h>
 #include<fstream>
+#include<sys/epoll.h>
+#include<boost/bind.hpp>
+#include<asio.hpp>
+#include<errno.h>
 using namespace std;
 
 #endif

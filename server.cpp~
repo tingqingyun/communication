@@ -7,12 +7,8 @@ pthread_mutex_t server::group_mutx;
 vector<bool> server::sock_arr(10000,false);
 unordered_map<string,int> server::name_sock_map;
 pthread_mutex_t server::name_sock_mutx;
-pthread_mutex_t server::group_mutx;
-pthread_mutex_t server::from_mutex;
 server::server(int port,string ip):server_port(port),server_ip(ip){
 	pthread_mutex_init(&name_sock_mutx,NULL);
-	pthread_mutex_init(&group_mutx,NULL);
-	pthread_mutex_init(&from_mutex,NULL);
 }
 
 //close all connect when server close
@@ -31,19 +27,6 @@ server::~server(){
 
 void server::run()
 {
-	//listen backlog size
-	int LISTENQ=200;
-	int i,maxi,listenfd,connfd,sockfd,epfd,nfds;
-	ssize_t n;
-	//char line[maxline]
-	socklen_t clilen;
-	struct epoll_event ev,events[10000];
-	epfd= epoll_create(10000);
-	struct sockaddr_in clientaddr;
-	struct sockaddr_in serveraddr;
-	listenfd = socket(PF_INET, SOCK_STREAM,0);
-	setnonblocking(listenfd);
-	
 	//server_sockfd is taojiezi,include ip-version, protocol
 	//AD_INET is ipv4, SOCK_STREAM is tcp
 	server_sockfd = socket(AF_INET,SOCK_STREAM,0);
@@ -95,24 +78,6 @@ void server::run()
 		t.detach();
 	}
 }
-
-void server::setnonblocking(int conn)
-{
-	int opts;
-	opts = fcntl(sock,F_GETFL);
-	if(opts<0)
-	{
-		perror("fcntl(sock,GETFL)");
-		exit(1);
-	}
-	opts = opts|O_NONBLOCK;
-	if(fcntl(sock,F_SETFL,opts)<0)
-	{
-		perror("fcntl(socl,SETFL,opts)");
-		exit(1);
-	}
-}
-
 void server::RecvMsg(int conn)
 {	
 	tuple<bool,string,string,int,int>info;
